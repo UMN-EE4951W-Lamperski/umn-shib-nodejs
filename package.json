@@ -1,0 +1,24 @@
+{
+    "name": "umn-shib-nodejs",
+    "description": "A Node.js implementation of the UMN Community Shibboleth API",
+    "author": [
+        "Michael Berkowski <mjb@umn.edu>",
+        "David Naughton <naughton@umn.edu>"
+    ],
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git@github.umn.edu:umn-community-shib/umn-shib-nodejs.git"
+    },
+    "dependencies": {
+        "url-parse": "*"
+    },
+    "devDependencies": {
+        "mocha": "2.2.x",
+        "chai": "3.2.x"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/mocha"
+    },
+    "engine": "node >= 0.12.0"
+}
