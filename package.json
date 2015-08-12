@@ -18,7 +18,7 @@
         "chai": "3.2.x"
     },
     "scripts": {
-        "test": "node_modules/.bin/mocha"
+        "test": "node_modules/.bin/mocha spec"
     },
     "engine": "node >= 0.12.0"
 }
