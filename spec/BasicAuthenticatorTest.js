@@ -37,7 +37,6 @@ describe("Login URL", function() {
   it("should use the MKey authnContext", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.buildLoginURL({mkey: true})).to.include('authnContextClassRef=' + encodeURIComponent(auth.UMN_MKEY_AUTHN_CONTEXT));
-    console.log(auth.buildLoginURL({mkey: true}));
   });
 });
 
