@@ -15,7 +15,8 @@
     },
     "devDependencies": {
         "mocha": "2.2.x",
-        "chai": "3.2.x"
+        "chai": "3.2.x",
+        "node-mocks-http": "1.4.x"
     },
     "scripts": {
         "test": "node_modules/.bin/mocha spec"
