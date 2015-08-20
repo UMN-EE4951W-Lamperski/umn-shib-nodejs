@@ -1,4 +1,5 @@
 var expect = require("chai").expect,
+  httpMocks = require("node-mocks-http"),
   BasicAuthenticator = require("../lib/BasicAuthenticator");
 
 describe("Login URL", function() {
@@ -65,5 +66,33 @@ describe("Logout URL", function() {
     var logoutNoIdPButReturn = auth.buildLogoutURL({logoutFromIdP: false, "return": returl});
     expect(logoutNoIdPButReturn).to.not.include("return=" + encodeURIComponent(auth.UMN_IDP_LOGOUT_URL));
     expect(logoutNoIdPButReturn).to.match(/%2FreturnURL$/);
+  });
+});
+
+describe("Login/Logout Redirects", function() {
+  var request = {
+    hostname: 'example.com',
+    uri: '/',
+    passive: true
+  };
+
+  it("should redirect to login with expected parameters", function() {
+    var auth = new BasicAuthenticator(request);
+    var opts = {
+      'passive': true,
+      'forceAuthn': true
+    };
+    var response = new httpMocks.createResponse();
+    auth.redirectToLogin(opts, response);
+    expect(response.getHeader("Location")).to.include("target=");
+  });
+  it("should redirect to logout with expected parameters", function() {
+    var opts = {
+      logoutFromIdP: true
+    };
+    var auth = new BasicAuthenticator(request);
+    var response = new httpMocks.createResponse();
+    auth.redirectToLogout(opts, response);
+    expect(response.getHeader("Location")).to.include("return=" + encodeURIComponent(auth.UMN_IDP_LOGOUT_URL));
   });
 });
