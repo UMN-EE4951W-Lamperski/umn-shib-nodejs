@@ -96,3 +96,38 @@ describe("Login/Logout Redirects", function() {
     expect(response.getHeader("Location")).to.include("return=" + encodeURIComponent(auth.UMN_IDP_LOGOUT_URL));
   });
 });
+
+describe("Session attributes", function() {
+  it.skip("should detect a valid session", function() {});
+  it.skip("should be logged in with MKey", function() {});
+  it.skip("should report the correct authentication instant", function() {
+  });
+});
+
+describe("Attribute access", function() {
+  it("should default to HTTP header access", function() {
+    var auth = new BasicAuthenticator();
+    expect(auth.getAttributeAccessMethod()).to.equal((new BasicAuthenticator()).UMN_ATTRS_FROM_HEADERS);
+  });
+  it("should accept known values for access methods", function() {
+    var auth = new BasicAuthenticator();
+    auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_ENV);
+    expect(auth.getAttributeAccessMethod()).to.equal((new BasicAuthenticator()).UMN_ATTRS_FROM_ENV);
+    auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_HEADERS);
+    expect(auth.getAttributeAccessMethod()).to.equal((new BasicAuthenticator()).UMN_ATTRS_FROM_HEADERS);
+  });
+  it("should not accept an unknown access method value", function() {
+    var auth = new BasicAuthenticator();
+    expect(function() {auth.setAttributeAccessMethod("badvalue")}).to.throw('Invalid attribute access method');
+  });
+});
+describe("Attribute normalization", function() {
+  it("should convert a HTTP header to a properly cased attribute name", function() {
+    var auth = new BasicAuthenticator();
+    auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_HEADERS);
+    expect(auth.normalizeAttributeName('HTTP_AN_ATTRIBUTE')).to.equal('an-attribute');
+
+    auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_ENV);
+    expect(auth.normalizeAttributeName('AN_ATTRIBUTE')).to.equal('AN_ATTRIBUTE');
+  });
+});
