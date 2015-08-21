@@ -98,9 +98,23 @@ describe("Login/Logout Redirects", function() {
 });
 
 describe("Session attributes", function() {
-  it.skip("should detect a valid session", function() {});
+  var request = httpMocks.createRequest({
+    hostname: 'example.com',
+    url: '/',
+    headers: {
+      'shib-identity-provider': 'http://idp2.shib.umn.edu/idp/shibboleth'
+    }
+  });
+  it("should detect a valid session", function() {
+    var auth = new BasicAuthenticator(request);
+  });
   it.skip("should be logged in with MKey", function() {});
   it.skip("should report the correct authentication instant", function() {
+    
+  });
+  it("should report the correct IdP", function() {
+    var auth = new BasicAuthenticator(request);
+    expect(auth.getIdpEntityId()).to.equal(request.headers['shib-identity-provider']);
   });
 });
 
