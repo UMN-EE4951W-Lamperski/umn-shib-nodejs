@@ -102,11 +102,12 @@ describe("Session attributes", function() {
     hostname: 'example.com',
     url: '/',
     headers: {
-      'shib-identity-provider': 'http://idp2.shib.umn.edu/idp/shibboleth'
+      'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth'
     }
   });
   it("should detect a valid session", function() {
     var auth = new BasicAuthenticator(request);
+    expect(auth.hasSession()).to.be.true;
   });
   it.skip("should be logged in with MKey", function() {});
   it.skip("should report the correct authentication instant", function() {
