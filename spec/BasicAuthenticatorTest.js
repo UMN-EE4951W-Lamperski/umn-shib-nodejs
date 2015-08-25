@@ -127,6 +127,60 @@ describe("Session attributes", function() {
   });
 
   it("should report the correct authentication instant", function() {
+    var tRequest = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        'shib-authentication-instant': '2015-08-25T17:47:14.785Z'
+      }
+    });
+    var auth = new BasicAuthenticator(tRequest);
+    expect(auth.loggedInSince().getTime()).to.equal(1440524834785);
+
+  });
+  it("should not return an authentication instant if no session is present", function() {
+    var aRequest = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'shib-authentication-instant': '2015-08-25T17:47:14.785Z'
+      }
+    });
+    var auth = new BasicAuthenticator(aRequest);
+    expect(auth.hasSessionTimedOut()).to.be.true;
+  });
+  it("should handle timeouts based on specified maxAge", function() {
+    var aRequest = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        // Time 20s in the past
+        'shib-authentication-instant': (new Date((((new Date()).getTime() / 1000) - 20) * 1000)).toISOString()
+      }
+    });
+    var auth = new BasicAuthenticator(aRequest);
+    console.log(aRequest.headers['shib-authentication-instant'])
+
+    // maxAge smaller than 20s ago
+    expect(auth.hasSessionTimedOut(19)).to.be.true;
+    // maxAge equal to 20s ago
+    expect(auth.hasSessionTimedOut(20)).to.be.true;
+    // maxAge greater than 20s ago NOT TIMED OUT
+    expect(auth.hasSessionTimedOut(21)).to.be.false;
+  });
+  it("should still find a valid, not timed out session", function() {
+    var aRequest = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        'shib-authentication-instant': (new Date()).toISOString()
+      }
+    });
+    var auth = new BasicAuthenticator(aRequest);
+    expect(auth.hasSessionTimedOut()).to.be.false;
   });
   it("should report the correct IdP", function() {
     var auth = new BasicAuthenticator(request);
