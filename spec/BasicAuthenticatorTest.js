@@ -109,9 +109,24 @@ describe("Session attributes", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.hasSession()).to.be.true;
   });
-  it.skip("should be logged in with MKey", function() {});
-  it.skip("should report the correct authentication instant", function() {
-    
+  it("should not be logged in with MKey", function() {
+    var auth = new BasicAuthenticator(request);
+    expect(auth.loggedInWithMKey()).to.be.false;
+  });
+  it("should be logged in with MKey", function() {
+    var mkeyRequest = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        'shib-authentication-method': (new BasicAuthenticator()).UMN_MKEY_AUTHN_CONTEXT
+      }
+    });
+    var auth = new BasicAuthenticator(mkeyRequest);
+    expect(auth.loggedInWithMKey()).to.be.true;
+  });
+
+  it("should report the correct authentication instant", function() {
   });
   it("should report the correct IdP", function() {
     var auth = new BasicAuthenticator(request);
