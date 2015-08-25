@@ -135,6 +135,18 @@ describe("Attribute access", function() {
     var auth = new BasicAuthenticator();
     expect(function() {auth.setAttributeAccessMethod("badvalue")}).to.throw('Invalid attribute access method');
   });
+  it("should return the known default set of common attributes", function() {
+    var auth = new BasicAuthenticator();
+    expect(auth.getDefaultAttributeNames()).to.have.all.members(['uid','eppn','isGuest','umnDID']);
+  });
+  it("should return the expected set of merged attribute names", function() {
+    var auth = new BasicAuthenticator();
+    expect(auth.getAttributeNames(['attr1','attr2','attr3'])).to.have.all.members(['uid','eppn','isGuest','umnDID','attr1','attr2','attr3']);
+  });
+  it("should throw an error if a non-array was passed in", function() {
+    var auth = new BasicAuthenticator();
+    expect(function() {auth.getAttributeNames("not an array")}).to.throw('requestedAttributes must be an Array');
+  });
 });
 describe("Attribute normalization", function() {
   it("should convert a HTTP header to a properly cased attribute name", function() {
