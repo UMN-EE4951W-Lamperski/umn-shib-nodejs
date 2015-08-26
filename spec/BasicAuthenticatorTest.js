@@ -2,6 +2,39 @@ var expect = require("chai").expect,
   httpMocks = require("node-mocks-http"),
   BasicAuthenticator = require("../lib/BasicAuthenticator");
 
+describe("API implementation", function() {
+  it("should implement all expected public API methods", function() {
+    var methods = [];
+    for (var method in (BasicAuthenticator.prototype)) {
+      if (typeof BasicAuthenticator.prototype[method] == "function") {
+        methods.push(method);
+      }
+    }
+    console.dir(methods);
+    expect(methods).to.have.all.members([
+      'buildLoginURL',
+      'buildLogoutURL',
+      'redirectToLogin',
+      'getAttributesOrRequestLogin',
+      'redirectToLogout',
+      'normalizeAttributeName',
+      'hasSession',
+      'hasSessionTimedOut',
+      'loggedInWithMKey',
+      'loggedInSince',
+      'getIdpEntityId',
+      'getDefaultAttributeNames',
+      'getAttributeNames',
+      'getAttributeValues',
+      'getAttributeValue',
+      'getAttributes',
+      'getAttributeAccessMethod',
+      'setAttributeAccessMethod',
+      'setHandlerURL'
+    ]);
+  });
+});
+
 describe("Login URL", function() {
   var request = {
     hostname: 'example.com',
@@ -11,7 +44,7 @@ describe("Login URL", function() {
 
   it("should have a default target", function() {
     var auth = new BasicAuthenticator(request);
-    
+
     var expected = 'https://' + request.hostname + '/Shibboleth.sso/Login';
     // Default return target is current request URI if unspecified
     var expTarget = '?target=' + encodeURIComponent('https://' + request.hostname + request.uri);
@@ -52,7 +85,7 @@ describe("Logout URL", function() {
   it("should begin with the SP logout endpoint", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.buildLogoutURL()).to.match(/^https:\/\/example.com\/Shibboleth\.sso\/Logout/);
-  }); 
+  });
 
   it("should contain a URL encoded return URL", function() {
     var auth = new BasicAuthenticator(request, {}, {"return": "https://example.com/returnURL?param=123"});
