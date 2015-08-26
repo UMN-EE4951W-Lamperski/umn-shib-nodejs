@@ -10,7 +10,6 @@ describe("API implementation", function() {
         methods.push(method);
       }
     }
-    console.dir(methods);
     expect(methods).to.have.all.members([
       'buildLoginURL',
       'buildLogoutURL',
@@ -194,7 +193,6 @@ describe("Session attributes", function() {
       }
     });
     var auth = new BasicAuthenticator(aRequest);
-    console.log(aRequest.headers['shib-authentication-instant'])
 
     // maxAge smaller than 20s ago
     expect(auth.hasSessionTimedOut(19)).to.be.true;
