@@ -118,6 +118,7 @@ describe("Login/Logout Redirects", function() {
     auth.redirectToLogin(opts, response);
     expect(response.getHeader("Location")).to.include("target=");
   });
+
   it("should redirect to logout with expected parameters", function() {
     var opts = {
       logoutFromIdP: true
@@ -137,14 +138,50 @@ describe("Session attributes", function() {
       'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth'
     }
   });
+
   it("should detect a valid session", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.hasSession()).to.be.true;
   });
+
+  it("should correctly retrieve values from env", function() {
+    // Set an attribute on process.env
+    process.env.givenName = 'Hawking';
+
+    // First one uses headers
+    var auth = new BasicAuthenticator(request);
+    auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_HEADERS);
+    expect(auth.getAttributeValue('givenName')).to.be.undefined;
+
+    // First one uses headers
+    var authEnv = new BasicAuthenticator(request);
+    authEnv.setAttributeAccessMethod(authEnv.UMN_ATTRS_FROM_ENV);
+    expect(authEnv.getAttributeValue('givenName')).to.equal('Hawking');
+
+    // Clean up that attribute from env
+    delete process.env.givenName;
+  });
+
+  it("should return multivalue attributes as an array or undefined", function() {
+    var request = httpMocks.createRequest({
+      hostname: 'example.com',
+      url: '/',
+      headers: {
+        'umnLibAccess': '1;2;9',
+        'customDelimiter': 'one,two,three'
+      }
+    });
+    var auth = new BasicAuthenticator(request);
+    expect(auth.getAttributeValues('umnLibAccess')).to.have.all.members(['1','2','9']);
+    expect(auth.getAttributeValues('customDelimiter', ',')).to.have.all.members(['one','two','three']);
+    
+  });
+
   it("should not be logged in with MKey", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.loggedInWithMKey()).to.be.false;
   });
+
   it("should be logged in with MKey", function() {
     var mkeyRequest = httpMocks.createRequest({
       hostname: 'example.com',
@@ -169,8 +206,8 @@ describe("Session attributes", function() {
     });
     var auth = new BasicAuthenticator(tRequest);
     expect(auth.loggedInSince().getTime()).to.equal(1440524834785);
-
   });
+
   it("should not return an authentication instant if no session is present", function() {
     var aRequest = httpMocks.createRequest({
       hostname: 'example.com',
@@ -182,6 +219,7 @@ describe("Session attributes", function() {
     var auth = new BasicAuthenticator(aRequest);
     expect(auth.hasSessionTimedOut()).to.be.true;
   });
+
   it("should handle timeouts based on specified maxAge", function() {
     var aRequest = httpMocks.createRequest({
       hostname: 'example.com',
@@ -201,6 +239,7 @@ describe("Session attributes", function() {
     // maxAge greater than 20s ago NOT TIMED OUT
     expect(auth.hasSessionTimedOut(21)).to.be.false;
   });
+
   it("should still find a valid, not timed out session", function() {
     var aRequest = httpMocks.createRequest({
       hostname: 'example.com',
@@ -213,6 +252,7 @@ describe("Session attributes", function() {
     var auth = new BasicAuthenticator(aRequest);
     expect(auth.hasSessionTimedOut()).to.be.false;
   });
+
   it("should report the correct IdP", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.getIdpEntityId()).to.equal(request.headers['shib-identity-provider']);
@@ -224,6 +264,7 @@ describe("Attribute access", function() {
     var auth = new BasicAuthenticator();
     expect(auth.getAttributeAccessMethod()).to.equal((new BasicAuthenticator()).UMN_ATTRS_FROM_HEADERS);
   });
+
   it("should accept known values for access methods", function() {
     var auth = new BasicAuthenticator();
     auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_ENV);
@@ -231,23 +272,28 @@ describe("Attribute access", function() {
     auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_HEADERS);
     expect(auth.getAttributeAccessMethod()).to.equal((new BasicAuthenticator()).UMN_ATTRS_FROM_HEADERS);
   });
+
   it("should not accept an unknown access method value", function() {
     var auth = new BasicAuthenticator();
     expect(function() {auth.setAttributeAccessMethod("badvalue")}).to.throw('Invalid attribute access method');
   });
+
   it("should return the known default set of common attributes", function() {
     var auth = new BasicAuthenticator();
     expect(auth.getDefaultAttributeNames()).to.have.all.members(['uid','eppn','isGuest','umnDID']);
   });
+
   it("should return the expected set of merged attribute names", function() {
     var auth = new BasicAuthenticator();
     expect(auth.getAttributeNames(['attr1','attr2','attr3'])).to.have.all.members(['uid','eppn','isGuest','umnDID','attr1','attr2','attr3']);
   });
+
   it("should throw an error if a non-array was passed in", function() {
     var auth = new BasicAuthenticator();
     expect(function() {auth.getAttributeNames("not an array")}).to.throw('requestedAttributes must be an Array');
   });
 });
+
 describe("Attribute normalization", function() {
   it("should convert a HTTP header to a properly cased attribute name", function() {
     var auth = new BasicAuthenticator();
