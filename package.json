@@ -1,5 +1,6 @@
 {
     "name": "umn-shib-nodejs",
+    "version": "0.1.1",
     "description": "A Node.js implementation of the UMN Community Shibboleth API",
     "author": [
         "Michael Berkowski <mjb@umn.edu>",
