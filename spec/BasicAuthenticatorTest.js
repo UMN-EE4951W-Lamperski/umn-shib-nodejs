@@ -36,17 +36,19 @@ describe("API implementation", function() {
 
 describe("Login URL", function() {
   var request = {
-    hostname: 'example.com',
     uri: '/',
-    passive: true
+    passive: true,
+    headers: {
+      host: 'example.com',
+    }
   };
 
   it("should have a default target", function() {
     var auth = new BasicAuthenticator(request);
 
-    var expected = 'https://' + request.hostname + '/Shibboleth.sso/Login';
+    var expected = 'https://' + request.headers.host + '/Shibboleth.sso/Login';
     // Default return target is current request URI if unspecified
-    var expTarget = '?target=' + encodeURIComponent('https://' + request.hostname + request.uri);
+    var expTarget = '?target=' + encodeURIComponent('https://' + request.headers.host + request.url);
     expect(auth.buildLoginURL()).to.equal(expected + expTarget);
   });
 
@@ -75,9 +77,11 @@ describe("Login URL", function() {
 
 describe("Logout URL", function() {
   var request = {
-    hostname: 'example.com',
     uri: '/',
-    passive: true
+    passive: true,
+    headers: {
+      host: 'example.com',
+    }
   };
   var returl = "https://example.com/returnURL";
 
@@ -103,9 +107,11 @@ describe("Logout URL", function() {
 
 describe("Login/Logout Redirects", function() {
   var request = {
-    hostname: 'example.com',
     uri: '/',
-    passive: true
+    passive: true,
+    headers: {
+      host: 'example.com',
+    }
   };
 
   it("should redirect to login with expected parameters", function() {
@@ -132,9 +138,9 @@ describe("Login/Logout Redirects", function() {
 
 describe("Session attributes", function() {
   var request = httpMocks.createRequest({
-    hostname: 'example.com',
     url: '/',
     headers: {
+      host: 'example.com',
       'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth'
     }
   });
@@ -164,9 +170,9 @@ describe("Session attributes", function() {
 
   it("should return multivalue attributes as an array or undefined", function() {
     var request = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'umnLibAccess': '1;2;9',
         'customDelimiter': 'one,two,three'
       }
@@ -184,9 +190,9 @@ describe("Session attributes", function() {
 
   it("should be logged in with MKey", function() {
     var mkeyRequest = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
         'shib-authentication-method': (new BasicAuthenticator()).UMN_MKEY_AUTHN_CONTEXT
       }
@@ -197,9 +203,9 @@ describe("Session attributes", function() {
 
   it("should report the correct authentication instant", function() {
     var tRequest = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
         'shib-authentication-instant': '2015-08-25T17:47:14.785Z'
       }
@@ -210,9 +216,9 @@ describe("Session attributes", function() {
 
   it("should not return an authentication instant if no session is present", function() {
     var aRequest = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'shib-authentication-instant': '2015-08-25T17:47:14.785Z'
       }
     });
@@ -222,9 +228,9 @@ describe("Session attributes", function() {
 
   it("should handle timeouts based on specified maxAge", function() {
     var aRequest = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
         // Time 20s in the past
         'shib-authentication-instant': (new Date((((new Date()).getTime() / 1000) - 20) * 1000)).toISOString()
@@ -242,9 +248,9 @@ describe("Session attributes", function() {
 
   it("should still find a valid, not timed out session", function() {
     var aRequest = httpMocks.createRequest({
-      hostname: 'example.com',
       url: '/',
       headers: {
+        host: 'example.com',
         'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
         'shib-authentication-instant': (new Date()).toISOString()
       }
