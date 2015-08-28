@@ -76,13 +76,14 @@ describe("Login URL", function() {
 });
 
 describe("Logout URL", function() {
-  var request = {
-    uri: '/',
+  var request = httpMocks.createRequest({
+    url: '/',
     passive: true,
     headers: {
       host: 'example.com',
     }
-  };
+  });
+  var response = httpMocks.createResponse();
   var returl = "https://example.com/returnURL";
 
   it("should begin with the SP logout endpoint", function() {
@@ -91,7 +92,7 @@ describe("Logout URL", function() {
   });
 
   it("should contain a URL encoded return URL", function() {
-    var auth = new BasicAuthenticator(request, {}, {"return": "https://example.com/returnURL?param=123"});
+    var auth = new BasicAuthenticator(request, response, {}, {"return": "https://example.com/returnURL?param=123"});
     expect(auth.buildLogoutURL()).to.include("return%3D" + encodeURIComponent(returl));
   });
 
@@ -115,13 +116,13 @@ describe("Login/Logout Redirects", function() {
   };
 
   it("should redirect to login with expected parameters", function() {
-    var auth = new BasicAuthenticator(request);
     var opts = {
       'passive': true,
       'forceAuthn': true
     };
     var response = new httpMocks.createResponse();
-    auth.redirectToLogin(opts, response);
+    var auth = new BasicAuthenticator(request, response);
+    auth.redirectToLogin(opts);
     expect(response.getHeader("Location")).to.include("target=");
   });
 
@@ -129,9 +130,9 @@ describe("Login/Logout Redirects", function() {
     var opts = {
       logoutFromIdP: true
     };
-    var auth = new BasicAuthenticator(request);
     var response = new httpMocks.createResponse();
-    auth.redirectToLogout(opts, response);
+    var auth = new BasicAuthenticator(request, response);
+    auth.redirectToLogout(opts);
     expect(response.getHeader("Location")).to.include("return=" + encodeURIComponent(auth.UMN_IDP_LOGOUT_URL));
   });
 });
@@ -157,7 +158,7 @@ describe("Session attributes", function() {
     // First one uses headers
     var auth = new BasicAuthenticator(request);
     auth.setAttributeAccessMethod(auth.UMN_ATTRS_FROM_HEADERS);
-    expect(auth.getAttributeValue('givenName')).to.be.undefined;
+    expect(auth.getAttributeValue('givenName')).to.be.null;
 
     // First one uses headers
     var authEnv = new BasicAuthenticator(request);
@@ -168,7 +169,7 @@ describe("Session attributes", function() {
     delete process.env.givenName;
   });
 
-  it("should return multivalue attributes as an array or undefined", function() {
+  it("should return multivalue attributes as an array or null", function() {
     var request = httpMocks.createRequest({
       url: '/',
       headers: {
@@ -180,7 +181,22 @@ describe("Session attributes", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.getAttributeValues('umnLibAccess')).to.have.all.members(['1','2','9']);
     expect(auth.getAttributeValues('customDelimiter', ',')).to.have.all.members(['one','two','three']);
-    
+    expect(auth.getAttributeValues('shouldBeNull', ',')).to.be.null;
+  });
+
+  it("should return an object containing multiple requested attributes", function() {
+    var request = httpMocks.createRequest({
+      url: '/',
+      headers: {
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        'shib-authentication-instant': (new Date((((new Date()).getTime() / 1000) - 20) * 1000)).toISOString(),
+        host: 'example.com',
+        'umnLibAccess': '1;2;9',
+        'customDelimiter': 'one,two,three'
+      }
+    });
+    var auth = new BasicAuthenticator(request);
+
   });
 
   it("should not be logged in with MKey", function() {
