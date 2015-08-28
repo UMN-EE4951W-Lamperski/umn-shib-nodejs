@@ -248,12 +248,13 @@ describe("Session attributes", function() {
       headers: {
         host: 'example.com',
         'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
-        // Time 20s in the past
-        'shib-authentication-instant': (new Date((((new Date()).getTime() / 1000) - 20) * 1000)).toISOString()
+        'shib-authentication-instant': null
       }
     });
-    var auth = new BasicAuthenticator(aRequest);
 
+    // Time 20s in the past
+    aRequest.headers['shib-authentication-instant'] = (new Date((((new Date()).getTime() / 1000) - 20) * 1000)).toISOString()
+    var auth = new BasicAuthenticator(aRequest);
     // maxAge smaller than 20s ago
     expect(auth.hasSessionTimedOut(19)).to.be.true;
     // maxAge equal to 20s ago
