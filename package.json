@@ -22,5 +22,5 @@
     "scripts": {
         "test": "node_modules/.bin/mocha spec"
     },
-    "engine": "node >= 0.12.0"
+    "engine": "node >= 4.1.1"
 }
