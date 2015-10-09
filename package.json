@@ -12,7 +12,7 @@
         "url": "git@github.umn.edu:umn-community-shib/umn-shib-nodejs.git"
     },
     "dependencies": {
-        "url-parse": "*"
+        "querystring": "*"
     },
     "devDependencies": {
         "mocha": "2.2.x",
