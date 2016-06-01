@@ -20,6 +20,7 @@ describe("API implementation", function() {
       'hasSession',
       'hasSessionTimedOut',
       'loggedInWithMKey',
+      'loggedInWithDuo',
       'loggedInSince',
       'getIdpEntityId',
       'getDefaultAttributeNames',
@@ -72,6 +73,11 @@ describe("Login URL", function() {
   it("should use the MKey authnContext", function() {
     var auth = new BasicAuthenticator(request);
     expect(auth.buildLoginURL({mkey: true})).to.include('authnContextClassRef=' + encodeURIComponent(auth.UMN_MKEY_AUTHN_CONTEXT));
+  });
+
+  it("should use the Duo authnContext", function() {
+    var auth = new BasicAuthenticator(request);
+    expect(auth.buildLoginURL({duo: true})).to.include('authnContextClassRef=' + encodeURIComponent(auth.UMN_DUO_AUTHN_CONTEXT));
   });
 });
 
@@ -215,6 +221,19 @@ describe("Session attributes", function() {
     });
     var auth = new BasicAuthenticator(mkeyRequest);
     expect(auth.loggedInWithMKey()).to.be.true;
+  });
+
+  it("should be logged in with Duo", function() {
+    var duoRequest = httpMocks.createRequest({
+      url: '/',
+      headers: {
+        host: 'example.com',
+        'shib-identity-provider': 'https://idp2.shib.umn.edu/idp/shibboleth',
+        'shib-authentication-method': (new BasicAuthenticator()).UMN_DUO_AUTHN_CONTEXT
+      }
+    });
+    var auth = new BasicAuthenticator(duoRequest);
+    expect(auth.loggedInWithDuo()).to.be.true;
   });
 
   it("should report the correct authentication instant", function() {
