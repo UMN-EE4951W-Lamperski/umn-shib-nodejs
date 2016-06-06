@@ -97,9 +97,9 @@ describe("Logout URL", function() {
     expect(auth.buildLogoutURL()).to.match(/^https:\/\/example.com\/Shibboleth\.sso\/Logout/);
   });
 
-  it("should contain a URL encoded return URL", function() {
+  it("should contain a double-encoded return URL returning from IdP logout", function() {
     var auth = new BasicAuthenticator(request, response, {}, {"return": "https://example.com/returnURL?param=123"});
-    expect(auth.buildLogoutURL()).to.include("return%3D" + encodeURIComponent(returl));
+    expect(auth.buildLogoutURL()).to.include("return%3D" + encodeURIComponent(encodeURIComponent(returl)));
   });
 
   it("should not logout from the IdP", function() {
