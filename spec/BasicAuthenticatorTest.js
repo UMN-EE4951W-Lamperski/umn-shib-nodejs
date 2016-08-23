@@ -91,6 +91,7 @@ describe("Logout URL", function() {
   });
   var response = httpMocks.createResponse();
   var returl = "https://example.com/returnURL";
+  var altLogout = 'https://example.edu/altLogout';
 
   it("should begin with the SP logout endpoint", function() {
     var auth = new BasicAuthenticator(request);
@@ -109,6 +110,18 @@ describe("Logout URL", function() {
     var logoutNoIdPButReturn = auth.buildLogoutURL({logoutFromIdP: false, "return": returl});
     expect(logoutNoIdPButReturn).to.not.include("return=" + encodeURIComponent(auth.UMN_IDP_LOGOUT_URL));
     expect(logoutNoIdPButReturn).to.match(/%2FreturnURL$/);
+  });
+
+  it("should accept an alternate logout endpoint", function() {
+    var auth = new BasicAuthenticator(request);
+    expect(auth.buildLogoutURL({LogoutFromIdP: true, IdPLogoutURL: altLogout})).to.include("return=" + encodeURIComponent(altLogout));
+  });
+
+  it("should accept an alternate logout endpoint with a double-encoded final return URL", function() {
+    var auth = new BasicAuthenticator(request);
+    var logoutIdPAltWithReturn = auth.buildLogoutURL({logoutFromIdP: true, IdPLogoutURL: altLogout, "return": returl});
+    expect(logoutIdPAltWithReturn).to.include("return=" + encodeURIComponent(altLogout));
+    expect(logoutIdPAltWithReturn).to.include("return%3D" + encodeURIComponent(encodeURIComponent(returl)));
   });
 });
 
