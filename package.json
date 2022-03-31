@@ -1,26 +1,26 @@
 {
-    "name": "umn-shib-nodejs",
-    "version": "1.0.0",
-    "description": "A Node.js implementation of the UMN Community Shibboleth API",
-    "author": [
-        "Michael Berkowski <mjb@umn.edu>",
-        "David Naughton <naughton@umn.edu>"
-    ],
-    "main": "index.js",
-    "repository": {
-        "type": "git",
-        "url": "git@github.umn.edu:umn-community-shib/umn-shib-nodejs.git"
-    },
-    "dependencies": {
-        "querystring": "*"
-    },
-    "devDependencies": {
-        "mocha": "2.2.x",
-        "chai": "3.2.x",
-        "node-mocks-http": "1.4.x"
-    },
-    "scripts": {
-        "test": "node_modules/.bin/mocha spec"
-    },
-    "engine": "node >= 4.1.1"
+  "name": "umn-shib-nodejs",
+  "version": "1.0.0",
+  "description": "A Node.js implementation of the UMN Community Shibboleth API",
+  "author": [
+    "Michael Berkowski <mjb@umn.edu>",
+    "David Naughton <naughton@umn.edu>",
+    "Matt Strapp <strap012@umn.edu>"
+  ],
+  "main": "./lib/BasicAuthenticator.js",
+  "types": "types/BasicAuthenticator.d.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git@github.umn.edu:umn-community-shib/umn-shib-nodejs.git"
+  },
+  "devDependencies": {
+    "chai": "4.3.6",
+    "mocha": "9.2.2",
+    "node-mocks-http": "1.11.0"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha spec"
+  },
+  "engine": "node >= 4.1.1"
 }
