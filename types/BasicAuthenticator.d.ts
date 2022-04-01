@@ -12,8 +12,8 @@ export default class BasicAuthenticator {
 	constructor(
 		request: Object,
 		response: Object,
-		loginOptions: Object,
-		logoutOptions: Object
+		loginOptions?: Object,
+		logoutOptions?: Object
 	);
 
 	/**
@@ -148,14 +148,14 @@ export default class BasicAuthenticator {
 	 * @param {Object} options - Object literal structure of key:value pairs merged with class default logout options
 	 * @returns {void}
 	 */
-	redirectToLogin(options: Object): void;
+	redirectToLogin(options?: Object): void;
 
 	/**
 	 * Redirect to the logout handler
 	 * @function
 	 * @param {Object} options - Logout options, passed to buildLogoutURL()
 	 */
-	redirectToLogout(options: Object): void;
+	redirectToLogout(options?: Object): void;
 
 	/**
 	 * Set the attribute access method.
