@@ -51,23 +51,23 @@ var shib = require("umn-shib-nodejs");
 
 // Assuming a simple Node.js application, inside the HTTP listener
 var server = http.createServer(function (request, response) {
-	// Instantiate a new BasicAuthenticator, passing in the
-	// event's request and response objects
-	var umnshib = new shib.BasicAuthenticator(request, response);
+  // Instantiate a new BasicAuthenticator, passing in the
+  // event's request and response objects
+  var umnshib = new shib.BasicAuthenticator(request, response);
 
-	// Check for an active Shibboleth session
-	if (!umnshib.hasSession()) {
-		umnshib.redirectToLogin();
-	}
+  // Check for an active Shibboleth session
+  if (!umnshib.hasSession()) {
+    umnshib.redirectToLogin();
+  }
 
-	response.writeHead(200, { "Content-Type": "text/plain" });
-	var output = "";
+  response.writeHead(200, { "Content-Type": "text/plain" });
+  var output = "";
 
-	// Access Shibboleth attributes
-	output += "Username: " + umnshib.getAttributeValue("eppn") + "\n";
-	output += "Name: " + umnshib.getAttributeValue("givenName") + "\n";
+  // Access Shibboleth attributes
+  output += "Username: " + umnshib.getAttributeValue("eppn") + "\n";
+  output += "Name: " + umnshib.getAttributeValue("givenName") + "\n";
 
-	response.end(output);
+  response.end(output);
 });
 server.listen(3000);
 ```
@@ -111,23 +111,23 @@ all options, visit the PHP project's documentation.
 ```javascript
 // Options are passed to URL methods as an object literal.
 var url = umnshib.buildLoginURL({
-	target: "https://example.umn.edu/return/url/path",
-	passive: true,
+  target: "https://example.umn.edu/return/url/path",
+  passive: true,
 });
 
 // Alternatively, default options can be set in the BasicAuthenticator constructor
 var loginOptions = {
-	target: "https://example.umn.edu/return/url/path",
-	passive: true,
+  target: "https://example.umn.edu/return/url/path",
+  passive: true,
 };
 var logoutOptions = {
-	logoutFromIdP: true,
+  logoutFromIdP: true,
 };
 var umnshib = new BasicAuthenticator(
-	request,
-	response,
-	loginOptions,
-	logoutOptions
+  request,
+  response,
+  loginOptions,
+  logoutOptions
 );
 
 // The authenticator will use those options when calling URL or redirection methods
